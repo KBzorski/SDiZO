@@ -6,6 +6,7 @@
 #include <string>
 #include <ctype.h>
 #include <cstdlib>
+#include <chrono>
 
 using namespace std;
    
@@ -88,6 +89,47 @@ void szybkie_sortowanie(int pierwszy, int rozmiar, int* tablica)
     if (j + 1 < rozmiar)
         szybkie_sortowanie(j + 1, rozmiar, tablica);
 }
+void sortowanie_bombelkowe(int rozmiar, float* tablica)
+{
+    bool sorted = true;
+    for (int i = 0; i < rozmiar; i++)
+        if (tablica[i] > tablica[i + 1])
+        {
+            if (sorted == true)
+                sorted = false;
+            swap(tablica[i], tablica[i + 1]);
+        }
+    if (sorted == false)
+    {
+        for (int j = 1; j < rozmiar; j++)
+            for (int i = 0; i < rozmiar; i++)
+                if (tablica[i] > tablica[i + 1])
+                    swap(tablica[i], tablica[i + 1]);
+    }
+    else
+        cout << endl << "Plik wejściowy nie wymaga sortowania!" << endl;
+}
+void sortowanie_bombelkowe(int rozmiar, int* tablica)
+{
+    bool sorted = true;
+    for (int i = 0; i < rozmiar; i++)
+        if (tablica[i] > tablica[i + 1])
+        {
+            if (sorted == true)
+                sorted = false;
+            swap(tablica[i], tablica[i + 1]);
+        }
+    if (sorted == false)
+    {
+        for (int j = 1; j < rozmiar; j++)
+            for (int i = 0; i < rozmiar; i++)
+                if (tablica[i] > tablica[i + 1])
+                    swap(tablica[i], tablica[i + 1]);
+    }
+    else
+        cout << endl << "Plik wejściowy nie wymaga sortowania!" << endl;
+}
+
 
 int main()
 {    
@@ -112,6 +154,9 @@ int main()
     string tmp_str[6] = {"","","","","",""};
 
     bool data = false;
+
+    chrono::duration<double> Time_Bombelkowe;
+    chrono::duration<double> Time_Quick;
 
     while ((selected==7 && pressed==13)==false)
     {
@@ -267,22 +312,37 @@ int main()
             }
             case 2:
             {
-                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym";
-
+                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym"<<endl<<"Trwa sortowanie";
+                if (data == true)
+                {
+                    auto start = chrono::high_resolution_clock::now();
+                    if (float_type == true)
+                        sortowanie_bombelkowe( number_of_lines - 1, float_array);
+                    else
+                        sortowanie_bombelkowe(number_of_lines - 1, int_array);
+                    auto finish = chrono::high_resolution_clock::now();
+                    Time_Bombelkowe = finish - start;
+                    cout << endl << "Sortowanie zakonczone";
+                }
+                else
+                    cout << endl << "Nie wczytano danych";
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 3:
             {
-                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim";
+                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl << "Trwa sortowanie";
                 
                 if (data == true)
                 {
+                    auto start = chrono::high_resolution_clock::now();
                     if (float_type == true)
                         szybkie_sortowanie(0, number_of_lines - 1, float_array);
                     else
                         szybkie_sortowanie(0, number_of_lines - 1, int_array);
+                    auto finish = chrono::high_resolution_clock::now();
+                    Time_Quick = finish - start;
                     cout << endl<< "Sortowanie zakonczone" ;
                 }
                 else
