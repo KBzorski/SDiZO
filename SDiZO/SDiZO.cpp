@@ -54,6 +54,41 @@ void menu(vector <string> options, int selected)
     }
 }
 
+void szybkie_sortowanie(int pierwszy, int rozmiar, float* tablica)
+{
+    int i = 0;
+    int j = 0;
+    float piwot = tablica[rozmiar];
+    for (j = i = pierwszy; i < rozmiar; i++)
+        if (tablica[i] < piwot)
+        {
+            swap(tablica[i], tablica[j]);
+            j++;
+        }
+    swap(tablica[rozmiar], tablica[j]);
+    if (pierwszy < j - 1)
+        szybkie_sortowanie(pierwszy, j - 1, tablica);
+    if (j + 1 < rozmiar)
+        szybkie_sortowanie(j + 1, rozmiar, tablica);
+}
+void szybkie_sortowanie(int pierwszy, int rozmiar, int* tablica)
+{
+    int i = 0;
+    int j = 0;
+    int piwot = tablica[rozmiar];
+    for (j = i = pierwszy; i < rozmiar; i++)
+        if (tablica[i] < piwot)
+        {
+            swap(tablica[i], tablica[j]);
+            j++;
+        }
+    swap(tablica[rozmiar], tablica[j]);
+    if (pierwszy < j - 1)
+        szybkie_sortowanie(pierwszy, j - 1, tablica);
+    if (j + 1 < rozmiar)
+        szybkie_sortowanie(j + 1, rozmiar, tablica);
+}
+
 int main()
 {    
     vector <string> options;
@@ -176,6 +211,7 @@ int main()
                     //}
                     cout << "Wczytano plik" << endl;
                 }
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 myfile.close();
 
@@ -217,10 +253,14 @@ int main()
                         }
 
                     myfile.close();
+                    cout << "Zapisano plik";
+                    cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
+                    _getch();
                 }
                 else
                 {
                     cout << "Nie wczytano danych" << endl;
+                    cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                     _getch();
                 }
                 break;
@@ -228,18 +268,35 @@ int main()
             case 2:
             {
                 cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym";
+
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 3:
             {
                 cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim";
+                
+                if (data == true)
+                {
+                    if (float_type == true)
+                        szybkie_sortowanie(0, number_of_lines - 1, float_array);
+                    else
+                        szybkie_sortowanie(0, number_of_lines - 1, int_array);
+                    cout << endl<< "Sortowanie zakonczone" ;
+                }
+                else
+                    cout <<endl<< "Nie wczytano danych";
+
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 4:
             {
                 cout << "Wybrano opcje: 5. Sortowanie przez zliczanie";
+
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
@@ -247,11 +304,15 @@ int main()
             {
                 cout << "Wybrano opcje: 6. Budowanie BST i kopca";
                 _getch();
+
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 break;
             }
             case 6:
             {
                 cout << "Wybrano opcje: 7. Sortowanie kopcowe";
+
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
@@ -271,6 +332,7 @@ int main()
                 }
                 else
                     cout <<endl<< "Nie wczytano danych" << endl;
+                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
