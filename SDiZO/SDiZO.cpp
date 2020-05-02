@@ -89,7 +89,7 @@ void szybkie_sortowanie(int pierwszy, int rozmiar, int* tablica)
     if (j + 1 < rozmiar)
         szybkie_sortowanie(j + 1, rozmiar, tablica);
 }
-void sortowanie_bombelkowe(int rozmiar, float* tablica)
+bool sortowanie_bombelkowe(int rozmiar, float* tablica)
 {
     bool sorted = true;
     for (int i = 0; i < rozmiar; i++)
@@ -107,9 +107,10 @@ void sortowanie_bombelkowe(int rozmiar, float* tablica)
                     swap(tablica[i], tablica[i + 1]);
     }
     else
-        cout << endl << "Plik wejściowy nie wymaga sortowania!" << endl;
+        cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;
+    return sorted;
 }
-void sortowanie_bombelkowe(int rozmiar, int* tablica)
+bool sortowanie_bombelkowe(int rozmiar, int* tablica)
 {
     bool sorted = true;
     for (int i = 0; i < rozmiar; i++)
@@ -127,7 +128,8 @@ void sortowanie_bombelkowe(int rozmiar, int* tablica)
                     swap(tablica[i], tablica[i + 1]);
     }
     else
-        cout << endl << "Plik wejściowy nie wymaga sortowania!" << endl;
+        cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;
+    return sorted;
 }
 
 
@@ -150,13 +152,15 @@ int main()
     bool float_type = false;
     float* float_array=new float[1];
     int* int_array=new int[1];
+    float* input_table_f = new float[1];;
+    int* input_table_i = new int[1];
     int number_of_lines=0;
     string tmp_str[6] = {"","","","","",""};
 
     bool data = false;
 
-    chrono::duration<double> Time_Bombelkowe;
-    chrono::duration<double> Time_Quick;
+    chrono::duration<double, std::milli> Time_Bombelkowe;
+    chrono::duration<double, std::milli> Time_Quick;
 
     while ((selected==7 && pressed==13)==false)
     {
@@ -254,6 +258,23 @@ int main()
                      //   else if (float_type == false)
                      //       cout << int_array[i]<<endl;
                     //}
+                    if (float_type == false)
+                    {
+                        input_table_i = new int[number_of_lines];
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            input_table_i[i] = int_array[i];
+                        }
+                    }
+                    else
+                    {
+                        input_table_f = new float[number_of_lines];
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            input_table_f[i] = float_array[i];
+                        }
+                    }
+                    
                     cout << "Wczytano plik" << endl;
                 }
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
@@ -312,42 +333,103 @@ int main()
             }
             case 2:
             {
-                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym"<<endl<<"Trwa sortowanie";
+                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym"<<endl<<"Trwa sortowanie...";
+                bool sorted = false;
                 if (data == true)
-                {
+                {                  
+                    if (float_type == false)
+                    {
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            int_array[i] = input_table_i[i];
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            float_array[i] = input_table_f[i];
+                        }
+                    }
                     auto start = chrono::high_resolution_clock::now();
                     if (float_type == true)
-                        sortowanie_bombelkowe( number_of_lines - 1, float_array);
+                        sorted=sortowanie_bombelkowe( number_of_lines - 1, float_array);
                     else
-                        sortowanie_bombelkowe(number_of_lines - 1, int_array);
+                        sorted=sortowanie_bombelkowe(number_of_lines - 1, int_array);
                     auto finish = chrono::high_resolution_clock::now();
                     Time_Bombelkowe = finish - start;
-                    cout << endl << "Sortowanie zakonczone";
+                    if (sorted == false)
+                    {
+                        cout << endl << "Sortowanie zakonczone";
+                        cout << endl << "Czas sortowania:" << Time_Bombelkowe.count() << "ms"; 
+                        
+                    }
                 }
                 else
                     cout << endl << "Nie wczytano danych";
+                
+               
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 3:
             {
-                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl << "Trwa sortowanie";
+                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl << "Trwa sortowanie...";
                 
                 if (data == true)
                 {
-                    auto start = chrono::high_resolution_clock::now();
-                    if (float_type == true)
-                        szybkie_sortowanie(0, number_of_lines - 1, float_array);
+                    if (float_type == false)
+                    {
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            int_array[i] = input_table_i[i];
+                        }
+                    }
                     else
-                        szybkie_sortowanie(0, number_of_lines - 1, int_array);
-                    auto finish = chrono::high_resolution_clock::now();
-                    Time_Quick = finish - start;
-                    cout << endl<< "Sortowanie zakonczone" ;
+                    {
+                        for (int i = 0; i < number_of_lines; i++)
+                        {
+                            float_array[i] = input_table_f[i];
+                        }
+                    }
+                    bool check = false;
+                    for (int i = 0; i < number_of_lines - 1; i++)
+                        if (float_type == true)
+                            {
+                                if (float_array[i] > float_array[i + 1])
+                                {
+                                    check = true;
+                                    break;
+                                }
+                            }
+                        else
+                            {
+                                if (int_array[i] > int_array[i + 1])
+                                {
+                                    check = true;
+                                    break;
+                                }
+                            }
+                    if (check == true)
+                    {
+                        auto start = chrono::high_resolution_clock::now();
+                        if (float_type == true)
+                            szybkie_sortowanie(0, number_of_lines - 1, float_array);
+                        else
+                            szybkie_sortowanie(0, number_of_lines - 1, int_array);
+                        auto finish = chrono::high_resolution_clock::now();
+                        Time_Quick = finish - start;
+                        cout << endl << "Sortowanie zakonczone";
+                        cout << endl << "Czas sortowania:" << Time_Quick.count() << "ms";
+                        
+                    }
+                    else
+                        cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;              
                 }
                 else
-                    cout <<endl<< "Nie wczytano danych";
-
+                    cout <<endl<< "Nie wczytano danych";           
+                
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
@@ -401,4 +483,6 @@ int main()
     }
     delete[] int_array;
     delete[] float_array;
+    delete[] input_table_f;
+    delete[] input_table_i;
 }
