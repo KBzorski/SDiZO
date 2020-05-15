@@ -197,7 +197,10 @@ void sortowanie_przez_zliczanie(int rozmiar, int* tablica)
     delete[] Ttmp;
 
 }
-void kopcowanie(int rozmiar, int* tablica) {}
+void buduj_kopiec(int rozmiar, int* tablica) {}
+void buduj_kopiec(int rozmiar, float* tablica) {}
+void sortowanie_przez_kopcowanie(int rozmiar, int* tablica) {}
+void sortowanie_przez_kopcowanie(int rozmiar, float* tablica) {}
 
 
 int main()
@@ -219,18 +222,23 @@ int main()
     bool float_type = false;
     float* float_array=new float[1];
     int* int_array=new int[1];
-    float* input_table_f = new float[1];;
+    float* input_table_f = new float[1];
     int* input_table_i = new int[1];
     int number_of_lines=0;
     string tmp_str[6] = {"","","","","",""};
 
+    int* kopiec_i = new int[1];
+    float*kopiec_f = new float[1];
+
     bool data = false;
     bool convert = false;
+    bool kopiec = false;
 
     chrono::duration<double, std::milli> Time_Bombelkowe;
     chrono::duration<double, std::milli> Time_Quick;
     chrono::duration<double, std::milli> Time_Counting;
     chrono::duration<double, std::milli> Time_Heapsort;
+    chrono::duration<double, std::milli> Time_BuildHeap;
 
     while ((selected==7 && pressed==13)==false)
     {
@@ -277,6 +285,7 @@ int main()
                 else
                 {   
                     data = true;
+                    kopiec = false;
                     string line = "";
                     getline(myfile, line);
                     tmp_str[0] = line;
@@ -295,13 +304,18 @@ int main()
                     number_of_lines = atoi(line.c_str());
                     getline(myfile, line);
                     tmp_str[3] = line;
+                    
                     if (line[8] == 'f' && line[9]=='l' && line[10] == 'o' && line[11] == 'a' && line[12] == 't')
                     {
+                        delete[] float_array;
+                        delete[] input_table_f;
                         float_type = true;
                         float_array = new float[number_of_lines];
                     }
                     else if (line[8] == 'i' && line[9] == 'n' && line[10] == 't')
                     {
+                        delete[] int_array;
+                        delete[] input_table_i;
                         float_type = false;
                         int_array = new int[number_of_lines];
                     }
@@ -403,11 +417,12 @@ int main()
             }
             case 2:
             {
-                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym"<<endl<<"Trwa sortowanie...";
+                cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym" << endl;
                 bool sorted = false;
                 convert = false;
                 if (data == true)
                 {                  
+                    cout << "Trwa sortowanie...";
                     if (float_type == false)
                     {
                         for (int i = 0; i < number_of_lines; i++)
@@ -437,7 +452,7 @@ int main()
                     }
                 }
                 else
-                    cout << endl << "Nie wczytano danych";
+                    cout << endl << "Nie wczytano danych.";
                 
                
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
@@ -446,10 +461,11 @@ int main()
             }
             case 3:
             {
-                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl << "Trwa sortowanie...";
+                cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl;
                 convert = false;
                 if (data == true)
                 {
+                    cout << "Trwa sortowanie...";
                     if (float_type == false)
                     {
                         for (int i = 0; i < number_of_lines; i++)
@@ -499,7 +515,7 @@ int main()
                         cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;              
                 }
                 else
-                    cout <<endl<< "Nie wczytano danych";           
+                    cout <<endl<< "Nie wczytano danych.";           
                 
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
@@ -570,17 +586,38 @@ int main()
                     }
                 }
                 else
-                    cout << endl << "Nie wczytano danych";
+                    cout << endl << "Nie wczytano danych.";
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 5:
             {
-                cout << "Wybrano opcje: 6. Budowanie BST i kopca";               
-                cout << endl << "OPCJA JESZCZE NIEAKTYWNA";
-
-                convert = false;
+                cout << "Wybrano opcje: 6. Budowanie BST i kopca";     
+                if (data == true)
+                {
+                    cout << endl << "Budowanie kopca...";
+                    auto start = chrono::high_resolution_clock::now();
+                    if (float_type == true) 
+                    {
+                        delete[] kopiec_f;
+                        kopiec_f = new float[number_of_lines];
+                        buduj_kopiec(number_of_lines, float_array);
+                    }
+                    else
+                    {
+                        delete[] kopiec_i;
+                        kopiec_i = new int[number_of_lines];
+                        buduj_kopiec(number_of_lines, int_array);
+                    }
+                    auto finish = chrono::high_resolution_clock::now();
+                    Time_BuildHeap = finish - start;
+                    kopiec = true;
+                    cout << endl << "Budowanie zakonczone";
+                    cout << endl << "Czas budowania kopca:" << Time_Heapsort.count() << "ms";
+                }
+                else
+                    cout << endl << "Nie wczytano danych.";
 
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
@@ -588,10 +625,68 @@ int main()
             }
             case 6:
             {
-                cout << "Wybrano opcje: 7. Sortowanie kopcowe";
-                cout << endl << "OPCJA JESZCZE NIEAKTYWNA";
+                cout << "Wybrano opcje: 7. Sortowanie kopcowe" << endl;
 
                 convert = false;
+                if (data == true)
+                {
+                    if (kopiec == true)
+                    {
+                        cout << "Trwa sortowanie...";
+                        if (float_type == false)
+                        {
+                            for (int i = 0; i < number_of_lines; i++)
+                            {
+                                int_array[i] = input_table_i[i];
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < number_of_lines; i++)
+                            {
+                                float_array[i] = input_table_f[i];
+                            }
+                        }
+                        bool check = false;
+                        for (int i = 0; i < number_of_lines - 1; i++)
+                            if (float_type == true)
+                            {
+                                if (float_array[i] > float_array[i + 1])
+                                {
+                                    check = true;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (int_array[i] > int_array[i + 1])
+                                {
+                                    check = true;
+                                    break;
+                                }
+                            }
+                        if (check == true)
+                        {
+                            auto start = chrono::high_resolution_clock::now();
+                            if (float_type == true)
+                                sortowanie_przez_kopcowanie(number_of_lines, float_array);
+                            else
+                                sortowanie_przez_kopcowanie(number_of_lines, int_array);
+                            auto finish = chrono::high_resolution_clock::now();
+                            Time_Heapsort = finish - start;
+                            cout << endl << "Sortowanie zakonczone";
+                            cout << endl << "Czas sortowania:" << Time_Heapsort.count() << "ms";
+
+                        }
+                        else
+                            cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;
+                    }
+                    else
+                        cout << endl << "Do sortowania przez kopcowanie wymagana jest budowa kopca!" << endl;
+
+                }
+                else
+                    cout << endl << "Nie wczytano danych.";
 
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
@@ -624,4 +719,6 @@ int main()
     delete[] float_array;
     delete[] input_table_f;
     delete[] input_table_i;
+    delete[] kopiec_f;
+    delete[] kopiec_i;
 }
