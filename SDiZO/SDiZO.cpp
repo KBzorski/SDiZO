@@ -7,13 +7,14 @@
 #include <ctype.h>
 #include <cstdlib>
 #include <chrono>
+#include <stdio.h>
 
 using namespace std;
    
 float t_average(float* arr, int size)
 {
     float average = arr[1];
-    float sum = 0;
+    double sum = 0;
     for (int i = 0; i < size; i++)
         sum += arr[i];
     average = sum / size;
@@ -33,6 +34,36 @@ float t_min(float* arr, int size)
 float t_max(float* arr, int size)
 {
     float max = arr[1];
+    for (int i = 0; i < size; i++)
+    {
+        if (max < arr[i])
+            max = arr[i];
+    }
+    return max;
+}
+float t_average(int* arr, int size)
+{
+    float average = arr[1];
+    long sum = 0;
+    for (int i = 0; i < size; i++)
+        sum += arr[i];
+    average = sum / size;
+    return average;
+}
+int t_min(int* arr, int size)
+{
+    int min = arr[1];
+    for (int i = 0; i < size; i++)
+    {
+        if (min > arr[i])
+            min = arr[i];
+    }
+
+    return min;
+}
+int t_max(int* arr, int size)
+{
+    int max = arr[1];
     for (int i = 0; i < size; i++)
     {
         if (max < arr[i])
@@ -131,6 +162,42 @@ bool sortowanie_bombelkowe(int rozmiar, int* tablica)
         cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;
     return sorted;
 }
+void sortowanie_przez_zliczanie(int rozmiar, int* tablica) 
+{
+    int L = t_min(tablica, rozmiar);
+    int H = t_max(tablica, rozmiar);
+    int k = H - L + 1;
+
+    int n = rozmiar;
+    //int *T=tablica; // przed sortowaniem
+    int *Ttmp = new int[k]; // zawiera liczbę elementów o danej wartości
+    int *Tout = new int[n]; // po sortowaniu
+    
+
+    int i; // zmienna pomocnicza
+
+    for (i = 0; i < k; ++i)
+        Ttmp[i] = 0;
+
+    for (i = 0; i < n; ++i)
+        ++Ttmp[tablica[i]-L];
+
+    for (i = 1; i < k; ++i)
+        Ttmp[i] += Ttmp[i - 1];   
+                                   
+    for (i = n - 1; i >= 0; --i)
+        Tout[--Ttmp[tablica[i]-L]] = tablica[i];  
+
+    for (int i = 0; i < rozmiar; i++)
+    {
+        tablica[i] = Tout[i];
+    }
+
+    delete[] Tout;
+    delete[] Ttmp;
+
+}
+void kopcowanie(int rozmiar, int* tablica) {}
 
 
 int main()
@@ -158,9 +225,12 @@ int main()
     string tmp_str[6] = {"","","","","",""};
 
     bool data = false;
+    bool convert = false;
 
     chrono::duration<double, std::milli> Time_Bombelkowe;
     chrono::duration<double, std::milli> Time_Quick;
+    chrono::duration<double, std::milli> Time_Counting;
+    chrono::duration<double, std::milli> Time_Heapsort;
 
     while ((selected==7 && pressed==13)==false)
     {
@@ -248,7 +318,7 @@ int main()
                         for (int i = 0; i < number_of_lines; i++)
                         {
                             getline(myfile, line);
-                            int_array[i] = stof(line);
+                            int_array[i] = stoi(line);
                         }
                     
                     //for (int i = 0; i < number_of_lines; i++)
@@ -301,7 +371,7 @@ int main()
                     myfile << tmp_str[3] << endl;
                     myfile << tmp_str[4] << endl;
 
-                    if (float_type)
+                    if (float_type && convert==false)
                         for (int i = 0; i < number_of_lines; i++)
                         {
                             if (i == 0)
@@ -309,7 +379,7 @@ int main()
                             else
                                 myfile << float_array[i] << endl;
                         }
-                    else
+                    else if(float_type==false || convert==true)
                         for (int i = 0; i < number_of_lines; i++)
                         {
                             if (i == 0)
@@ -335,6 +405,7 @@ int main()
             {
                 cout << "Wybrano opcje: 3. Sortowanie algorytmem babelkowym"<<endl<<"Trwa sortowanie...";
                 bool sorted = false;
+                convert = false;
                 if (data == true)
                 {                  
                     if (float_type == false)
@@ -376,7 +447,7 @@ int main()
             case 3:
             {
                 cout << "Wybrano opcje: 4. Sortowanie algorytmem szybkim" << endl << "Trwa sortowanie...";
-                
+                convert = false;
                 if (data == true)
                 {
                     if (float_type == false)
@@ -436,23 +507,91 @@ int main()
             }
             case 4:
             {
-                cout << "Wybrano opcje: 5. Sortowanie przez zliczanie";
+                cout << "Wybrano opcje: 5. Sortowanie przez zliczanie" << endl;
+                if (data == true)
+                {   
+                    
+                    if (float_type == true)
+                    {
+                        cout << "Dane nie sa typu calkowitego. Przekonwertowac dane na typ int i wykonac sortowanie?\t[T/N]" << endl;
+                        
+                        char decision = _getch();
+                        if (decision == 'T' || decision == 't')
+                        {
+                            convert = true;
+                            cout << "Wybrano: TAK. Sortowanie zostanie wykonane." << endl;
+                        }
+                        else if (decision == 'N' || decision == 'n')
+                        {
+                            convert = false;
+                            cout << "Wybrano: NIE. Sortowanie nie zostanie wykonane." << endl;
+                        }
+                        else
+                            cout << "Wybrano nieprawidowa odpowiedz. Sortowanie nie zostanie wykonane." << endl;
+                    }
+                    if (float_type == false || convert==true)
+                    {
+                        if (convert==false)
+                            for (int i = 0; i < number_of_lines; i++)
+                            {
+                                int_array[i] = input_table_i[i];
+                            }
+                        else
+                        {
+                            delete[] int_array;
+                            int_array = new int[number_of_lines];
+                            for (int i = 0; i < number_of_lines; i++)
+                            {
+                                int_array[i] = (int)input_table_f[i];
+                            }
+                        }
+                        bool check = false;
+                        for (int i = 0; i < number_of_lines - 1; i++)
+                           
+                                if (int_array[i] > int_array[i + 1])
+                                {
+                                    check = true;
+                                    break;
+                                }
 
+                        if (check == true)
+                        {
+                            cout <<endl<< "Trwa sortowanie...";                          
+                            auto start = chrono::high_resolution_clock::now();
+                            sortowanie_przez_zliczanie(number_of_lines, int_array);
+                            auto finish = chrono::high_resolution_clock::now();
+                            Time_Counting = finish - start;
+                            cout << endl << "Sortowanie zakonczone";
+                            cout << endl << "Czas sortowania:" << Time_Counting.count() << "ms";
+
+                        }
+                        else
+                            cout << endl << "Plik wejsciowy nie wymaga sortowania!" << endl;
+                    }
+                }
+                else
+                    cout << endl << "Nie wczytano danych";
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
                 break;
             }
             case 5:
             {
-                cout << "Wybrano opcje: 6. Budowanie BST i kopca";
-                _getch();
+                cout << "Wybrano opcje: 6. Budowanie BST i kopca";               
+                cout << endl << "OPCJA JESZCZE NIEAKTYWNA";
+
+                convert = false;
 
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
+                _getch();
                 break;
             }
             case 6:
             {
                 cout << "Wybrano opcje: 7. Sortowanie kopcowe";
+                cout << endl << "OPCJA JESZCZE NIEAKTYWNA";
+
+                convert = false;
 
                 cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
                 _getch();
@@ -469,7 +608,7 @@ int main()
                     if (float_type)
                         tmp_str[5] = ";" + to_string(t_min(float_array, number_of_lines)) + ";" + to_string(t_max(float_array, number_of_lines)) + ";" + to_string(t_average(float_array, number_of_lines));
                     else
-                        tmp_str[5] = ";" + to_string(t_min((float*)int_array, number_of_lines)) + ";" + to_string(t_max((float*)int_array, number_of_lines)) + ";" + to_string(t_average((float*)int_array, number_of_lines));
+                        tmp_str[5] = ";" + to_string(t_min(int_array, number_of_lines)) + ";" + to_string(t_max(int_array, number_of_lines)) + ";" + to_string(t_average(int_array, number_of_lines));
                     cout << endl << "Obliczono wartosc minimalna, maksymalna, oraz srednia dla wczytanych danych.";
                 }
                 else
