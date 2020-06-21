@@ -9,6 +9,7 @@
 #include <chrono>
 #include <stdio.h>
 
+
 using namespace std;
    
 float t_average(float* arr, int size)
@@ -263,7 +264,6 @@ int main()
     options.push_back("3. Sortowanie algorytmem babelkowym");
     options.push_back("4. Sortowanie algorytmem szybkim");
     options.push_back("5. Sortowanie przez zliczanie");
-    // options.push_back("6. Budowanie BST i kopca");
     options.push_back("6. Sortowanie kopcowe");
     options.push_back("7. Zamknij program");
     options.push_back("8. OBLICZENIA TESTOWE");
@@ -278,19 +278,18 @@ int main()
     int* input_table_i = new int[1];
     int number_of_lines = 0;
     string tmp_str[6] = { "","","","","","" };
+    string time_str[5] = { "Babelkowe;Szybkie;Przez zliczanie;Przez Kopcowanie","","","","" };
 
     int* kopiec_i = new int[1];
     float* kopiec_f = new float[1];
 
     bool data = false;
     bool convert = false;
-    //bool kopiec = false;
 
     chrono::duration<double, std::milli> Time_Bombelkowe;
     chrono::duration<double, std::milli> Time_Quick;
     chrono::duration<double, std::milli> Time_Counting;
     chrono::duration<double, std::milli> Time_Heapsort;
-    //chrono::duration<double, std::milli> Time_BuildHeap;
 
     while ((selected == 6 && pressed == 13) == false)
     {
@@ -315,8 +314,6 @@ int main()
         else if (pressed == 13)
         {
             system("cls");
-            //cout << "Wybrano opcje: " << selected + 1 << endl;
-            //cin.get();
             switch (selected) {
             case 0:
             {
@@ -324,12 +321,8 @@ int main()
                 cout << "Wybrano opcje: 1. Wgraj plik wejsciowy" << endl;
                 cout << "Wprowadz sciezke do pliku:";
                 cin >> file_path;
-                //cout << file_path;
-
                 fstream myfile;
-                //file_path = "C:\\Users\\kamil\\Downloads\\dane (1).csv";
                 myfile.open(file_path, ios::in);
-                //myfile.open("C:\\Users\\kamil\\Downloads\\dane (1).csv", ios::in);
                 if (myfile.good() == false)
                 {
                     cout << "Nieprawidlowa sciezka do pliku";
@@ -337,7 +330,6 @@ int main()
                 else
                 {
                     data = true;
-                    //kopiec = false;
                     string line = "";
                     getline(myfile, line);
                     tmp_str[0] = line;
@@ -386,14 +378,6 @@ int main()
                             getline(myfile, line);
                             int_array[i] = stoi(line);
                         }
-
-                    //for (int i = 0; i < number_of_lines; i++)
-                    //{
-                    //    if (float_type == true)
-                     //       cout << float_array[i]<<endl;
-                     //   else if (float_type == false)
-                     //       cout << int_array[i]<<endl;
-                    //}
                     if (float_type == false)
                     {
                         input_table_i = new int[number_of_lines];
@@ -428,7 +412,6 @@ int main()
                 {
                     cout << "Wprowadz sciezke do pliku wraz z formatem .csv: ";
                     cin >> file_path;
-                    //file_path = "C:\\Users\\kamil\\Downloads\\dane (1) nowe.csv";
                     fstream myfile;
                     myfile.open(file_path, ios::out);
                     myfile << tmp_str[0] << endl;
@@ -442,6 +425,10 @@ int main()
                         {
                             if (i == 0)
                                 myfile << float_array[i] << tmp_str[5] << endl;
+                            else if (i == 1)
+                                myfile << float_array[i] <<";"+ time_str[0] << endl;
+                            else if (i == 2)
+                                myfile << float_array[i] << ";" + time_str[1] + ";" + time_str[2] + ";" + time_str[3] + ";" + time_str[4] << endl;
                             else
                                 myfile << float_array[i] << endl;
                         }
@@ -450,6 +437,10 @@ int main()
                         {
                             if (i == 0)
                                 myfile << int_array[i] << tmp_str[5] << endl;
+                            else if (i==1)
+                                myfile << int_array[i] << ";" + time_str[0] << endl;
+                            else if (i==2)
+                                myfile << int_array[i] << ";" + time_str[1]+";"+ time_str[2] + ";" + time_str[3] + ";" + time_str[4] << endl;
                             else
                                 myfile << int_array[i] << endl;
                         }
@@ -500,6 +491,7 @@ int main()
                     {
                         cout << endl << "Sortowanie zakonczone";
                         cout << endl << "Czas sortowania:" << Time_Bombelkowe.count() << "ms";
+                        time_str[1]=to_string(Time_Bombelkowe.count())+ " ms";
 
                     }
                 }
@@ -561,6 +553,7 @@ int main()
                         Time_Quick = finish - start;
                         cout << endl << "Sortowanie zakonczone";
                         cout << endl << "Czas sortowania:" << Time_Quick.count() << "ms";
+                        time_str[2] = to_string(Time_Quick.count()) + " ms";
 
                     }
                     else
@@ -631,6 +624,7 @@ int main()
                             Time_Counting = finish - start;
                             cout << endl << "Sortowanie zakonczone";
                             cout << endl << "Czas sortowania:" << Time_Counting.count() << "ms";
+                            time_str[3] = to_string(Time_Counting.count()) + " ms";
 
                         }
                         else
@@ -643,39 +637,6 @@ int main()
                 _getch();
                 break;
             }
-            /*case 5:
-            {
-                cout << "Wybrano opcje: 6. Budowanie BST i kopca";
-                if (data == true)
-                {
-                    cout << endl << "Budowanie kopca...";
-                    auto start = chrono::high_resolution_clock::now();
-                    if (float_type == true)
-                    {
-                        delete[] kopiec_f;
-                        kopiec_f = new float[number_of_lines];
-                        buduj_kopiec(number_of_lines, float_array);
-                    }
-                    else
-                    {
-                        delete[] kopiec_i;
-                        kopiec_i = new int[number_of_lines];
-                        buduj_kopiec(number_of_lines, int_array);
-                    }
-                    auto finish = chrono::high_resolution_clock::now();
-                    Time_BuildHeap = finish - start;
-                    kopiec = true;
-                    cout << endl << "Budowanie zakonczone";
-                    cout << endl << "Czas budowania kopca:" << Time_Heapsort.count() << "ms";
-                }
-                else
-                    cout << endl << "Nie wczytano danych.";
-
-                cout << endl << "Wcisnij dowolny klawisz aby powrocic do menu" << endl;
-                _getch();
-                break;
-            }
-            */
             case 5:
             {
                 cout << "Wybrano opcje: 6. Sortowanie kopcowe" << endl;
@@ -683,8 +644,6 @@ int main()
                 convert = false;
                 if (data == true)
                 {
-                    //if (kopiec == true)
-                    //{
                     cout << "Trwa sortowanie...";
                     if (float_type == false)
                     {
@@ -729,6 +688,7 @@ int main()
                         Time_Heapsort = finish - start;
                         cout << endl << "Sortowanie zakonczone";
                         cout << endl << "Czas sortowania:" << Time_Heapsort.count() << "ms";
+                        time_str[4] = to_string(Time_Heapsort.count()) + " ms";
 
                     }
                     else
